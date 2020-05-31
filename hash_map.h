@@ -87,6 +87,8 @@ namespace rstd
     };
   }
 
+  using namespace rstd_support;
+
   template< typename T >
   class hash_map
   {
@@ -100,7 +102,7 @@ namespace rstd
     uint32_t _elementCount = 0;
 
     //! Pointer to the hash_map_ll_node linked list array.
-    rstd_support::hash_map_ll_node<T>** _heads = nullptr;
+    hash_map_ll_node<T>** _heads = nullptr;
 
   public:
 
@@ -121,7 +123,7 @@ namespace rstd
         _hashIndices = 256;
       }
 
-      _heads = new rstd_support::hash_map_ll_node<T> * [_hashIndices];
+      _heads = new hash_map_ll_node<T> * [_hashIndices];
       memsetHeads();
     }
 
@@ -129,7 +131,7 @@ namespace rstd
 
       for ( uint32_t i = 0; i < _hashIndices; i++ ) {
         if ( other._heads[i] != nullptr ) {
-          _heads[i] = new rstd_support::hash_map_ll_node<T>( *( other._heads[i] ) );
+          _heads[i] = new hash_map_ll_node<T>( *( other._heads[i] ) );
         }
       }
     }
@@ -161,11 +163,11 @@ namespace rstd
     T& operator[]( int32_t rawKey ) {
 
       uint32_t hashedKey = hashThis( rawKey );
-      rstd_support::hash_map_ll_node<T>* curNode = _heads[hashedKey];
+      hash_map_ll_node<T>* curNode = _heads[hashedKey];
 
       //First record
       if ( curNode == nullptr ) {
-        _heads[hashedKey] = new rstd_support::hash_map_ll_node<T>( rawKey, nullptr, new T() );
+        _heads[hashedKey] = new hash_map_ll_node<T>( rawKey, nullptr, new T() );
         _elementCount++;
         return *( _heads[hashedKey]->dataPointer );
       }
@@ -181,7 +183,7 @@ namespace rstd
           continue;
         }
 
-        curNode->childNode = new rstd_support::hash_map_ll_node<T>( rawKey, curNode, new T() );
+        curNode->childNode = new hash_map_ll_node<T>( rawKey, curNode, new T() );
         _elementCount++;
         return *( curNode->childNode->dataPointer );
 
@@ -193,8 +195,8 @@ namespace rstd
 
       for ( uint32_t i = 0; i < _hashIndices; i++ ) {
 
-        rstd_support::hash_map_ll_node<T>* toDelete = _heads[i];
-        rstd_support::hash_map_ll_node<T>* nextToDelete;
+        hash_map_ll_node<T>* toDelete = _heads[i];
+        hash_map_ll_node<T>* nextToDelete;
 
         while ( toDelete != nullptr ) {
           nextToDelete = toDelete->childNode;
@@ -210,7 +212,7 @@ namespace rstd
     void erase( int32_t rawKey ) {
 
       uint32_t hashedKey = hashThis( rawKey );
-      rstd_support::hash_map_ll_node<T>* curNode = _heads[hashedKey];
+      hash_map_ll_node<T>* curNode = _heads[hashedKey];
 
       if ( curNode == nullptr ) {
         return;
@@ -253,7 +255,7 @@ namespace rstd
     uint32_t bucketDensity( int32_t rawKey ) {
 
       uint32_t counter = 0;
-      rstd_support::hash_map_ll_node<T>* curNode = _heads[hashThis( rawKey )];
+      hash_map_ll_node<T>* curNode = _heads[hashThis( rawKey )];
 
       while ( curNode != nullptr ) {
         counter++;
@@ -278,7 +280,7 @@ namespace rstd
 
         if ( headerHasData( i ) ) {
 
-          rstd_support::hash_map_ll_node<T>* h = _heads[i];
+          hash_map_ll_node<T>* h = _heads[i];
 
           while ( h != nullptr ) {
             std::cout << i << "\t" << ( h->rawKey ) << "\t" << *( h->dataPointer ) << std::endl;
@@ -294,7 +296,7 @@ namespace rstd
 
     //! Clears the _heads data to all 0 bits.
     void memsetHeads() {
-      memset( _heads, 0, sizeof( rstd_support::hash_map_ll_node<T>* ) * _hashIndices );
+      memset( _heads, 0, sizeof( hash_map_ll_node<T>* ) * _hashIndices );
     }
 
     //! Hashes the key
